@@ -1,0 +1,28 @@
+---
+name: Terraform Provider PR Linting
+
+author: jackofallops
+
+description: Runs Linting tasks against terraform provider pull requests
+
+inputs:
+    providerName:
+        description: Name of the terraform provider to run linting tasks against
+        required: true
+
+    goVersion:
+        description: Version of Go to run against
+        required: false
+        default: "1.13"
+
+    lintTask:
+        description: Linting operation to perform
+        required: true
+
+runs:
+    using: 'docker'
+    image: 'docker://golang:${{ inputs.goVersion }}'
+
+branding:
+    icon: 'check-circle'
+    color: 'green'
