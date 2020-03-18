@@ -21,7 +21,7 @@ git checkout ${PULLREQUESTREF}
 PROVIDERNOTSUPPORTED=1
 TASKNOTSUPPORTED=2
 
-case INPUT_PROVIDER in
+case ${PROVIDERNAME} in
     terraform-provider-azurerm )
         lint-azurerm
         ;;
@@ -37,7 +37,7 @@ case INPUT_PROVIDER in
 
 func lint-azurerm() {
     make tools
-    case INPUT_LINTTASK in
+    case ${LINTTASK} in
         lintrest )
             make lintrest
             ;;
@@ -47,6 +47,11 @@ func lint-azurerm() {
         website-lint )
             make website-lint
             ;;
+        lint-all )
+            make tools
+            make lintrest
+            make tflint
+            make website-lint
         * )
             echo "Lint task '${LINTTASK}' not supported"
             exit $TASKNOTSUPPORTED
@@ -54,17 +59,24 @@ func lint-azurerm() {
 }
 
 func lint-azuread() {
-    make tools
-    case INPUT_LINTTASK in
+    case ${LINTTASK} in
         lint )
+            make tools
             make lint
             ;;
         tflint )
+            make tools
             make tflint
             ;;
         website-lint )
+            make tools
             make website-lint
             ;;
+        lint-all )
+            make tools
+            make lint
+            make tflint
+            make website-lint
         * )
             echo "Lint task not supported for provider ${INPUT_PROVIDER}"
             exit $TASKNOTSUPPORTED
