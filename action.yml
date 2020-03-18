@@ -21,7 +21,11 @@ inputs:
 
 runs:
     using: 'docker'
-    image: 'docker://golang:${{ inputs.goVersion }}'
+    image: docker://golang:${{ inputs.goVersion }}
+    args:
+        - -b ${{ github.head_ref }}
+        - -p ${{ input.providerName}}
+        - -t ${{ input.lintTask }}
 
 branding:
     icon: 'check-circle'

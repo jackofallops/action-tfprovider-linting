@@ -14,6 +14,7 @@ GH action for linting Terraform Providers
 ### goVersion
 
 **Optional** Version of Go to run against (Defaults to latest `1.13.x`)
+~> **NOTE:** alpha stage with this action - *only* 1.13.x (latest) is supported
 
 ## Outputs
 _None currently_
