@@ -22,8 +22,7 @@ done
 # git clone --mirror git@github.com:terraform-providers/${PROVIDERNAME}.git
 git clone --depth=1 https://github.com/terraform-providers/"${PROVIDERNAME}".git
 cd "${PROVIDERNAME}"
-git fetch origin "${PULLREQUESTREF}":lint
-git checkout lint
+git fetch origin "${PULLREQUESTREF}" &&  git checkout FETCH_HEAD
 
 # Exit Codes
 PROVIDERNOTSUPPORTED=1
