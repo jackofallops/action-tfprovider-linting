@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-while getopts ":bpt" opt; do
+set -ex
+
+while getopts ":b:p:t:" opt; do
     case ${opt} in
         b )
         PULLREQUESTREF=$OPTARG
@@ -9,42 +11,37 @@ while getopts ":bpt" opt; do
         PROVIDERNAME=$OPTARG
         ;;
         t )
-        LINTTASK=$LINTTASK
+        LINTTASK=$OPTARG
+        ;;
+        * )
+        echo "Invalid option specified"
         ;;
     esac
 done
 
-git clone --mirror git@github.com:terraform-providers/${PROVIDERNAME}.git
-git checkout ${PULLREQUESTREF}
+# git clone --mirror git@github.com:terraform-providers/${PROVIDERNAME}.git
+git clone --depth=1 https://github.com/terraform-providers/"${PROVIDERNAME}".git
+cd "${PROVIDERNAME}"
+git fetch origin "${PULLREQUESTREF}":lint
+git checkout lint
 
 # Exit Codes
 PROVIDERNOTSUPPORTED=1
 TASKNOTSUPPORTED=2
 
-case ${PROVIDERNAME} in
-    terraform-provider-azurerm )
-        lint-azurerm
-        ;;
-
-    terraform-provider-azuread )
-        lint-azuread
-        ;;
-
-    * )
-        echo "provider ${PROVIDERNAME} not currently supported"
-        exit $PROVIDERNOTSUPPORTED
-        ;;
-
-func lint-azurerm() {
-    make tools
+lint-azurerm () {
+    
     case ${LINTTASK} in
         lintrest )
+            make tools
             make lintrest
             ;;
         tflint )
+            make tools
             make tflint
             ;;
         website-lint )
+            make tools
             make website-lint
             ;;
         lint-all )
@@ -52,13 +49,15 @@ func lint-azurerm() {
             make lintrest
             make tflint
             make website-lint
+            ;;
         * )
             echo "Lint task '${LINTTASK}' not supported"
             exit $TASKNOTSUPPORTED
             ;;
+    esac
 }
 
-func lint-azuread() {
+lint-azuread () {
     case ${LINTTASK} in
         lint )
             make tools
@@ -77,9 +76,26 @@ func lint-azuread() {
             make lint
             make tflint
             make website-lint
+            ;;
         * )
             echo "Lint task not supported for provider ${INPUT_PROVIDER}"
             exit $TASKNOTSUPPORTED
             ;;
+    esac
 }
+
+case ${PROVIDERNAME} in
+    terraform-provider-azurerm )
+        lint-azurerm
+        ;;
+
+    terraform-provider-azuread )
+        lint-azuread
+        ;;
+
+    * )
+        echo "provider ${PROVIDERNAME} not currently supported"
+        exit $PROVIDERNOTSUPPORTED
+        ;;
+esac
 
